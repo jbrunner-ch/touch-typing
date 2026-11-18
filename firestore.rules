@@ -1,0 +1,267 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId} (must match request.auth.uid)
+    // Fields:
+    //   - uid: string (required, immutable, must equal userId)
+    //   - xp: number (required, >= 0)
+    //   - level: number (required, >= 1)
+    //   - streak: number (required, >= 0)
+    //   - preferredLayout: string (required, in ['de-qwertz', 'ch-qwertz', 'en-qwerty'])
+    //   - badges: list (required, max 50 items)
+    //   - displayName: string | null (optional, max 100 chars)
+    //   - email: string | null (optional, valid email, max 254 chars)
+    //   - photoURL: string | null (optional, valid http/https URL, max 1000 chars)
+    //   - lastPracticeDate: string (optional, max 32 chars)
+    //   - soundEnabled: bool (optional)
+    //   - showKeyboard: bool (optional)
+    //   - showHands: bool (optional)
+    //   - privacyConsentAt: timestamp | string (optional, string max 64 chars)
+    //   - totalLessonsCompleted: number (optional, >= 0)
+    //   - totalKeystrokes: number (optional, >= 0)
+    //   - createdAt: timestamp | string (optional, immutable once set, string max 64 chars)
+    //   - updatedAt: timestamp | string (optional, string max 64 chars)
+    //
+    // Subcollection: users/{userId}/lessons
+    // Document ID: {lessonId}
+    // Fields:
+    //   - lessonId: string (required, 1..100 chars)
+    //   - stars: int (required, 0..3)
+    //   - bestWpm: number (required, 0..1000)
+    //   - bestCpm: number (required, 0..5000)
+    //   - bestAccuracy: number (required, 0..100)
+    //   - attempts: int (required, >= 1)
+    //   - lastPlayedAt: timestamp | string (required, string max 64 chars)
+    //
+    // Subcollection: users/{userId}/stats
+    // Document ID: {statId} (e.g., 'keys')
+    // Fields:
+    //   - keys: map (required, max 200 entries)
+    //   - updatedAt: timestamp | string (required, string max 64 chars)
+    //
+    // Subcollection: users/{userId}/sessions
+    // Document ID: {sessionId}
+    // Fields:
+    //   - lessonId: string (required, 1..100 chars)
+    //   - lessonTitle: string (required, 1..200 chars)
+    //   - wpm: number (required, 0..1000)
+    //   - cpm: number (required, 0..5000)
+    //   - accuracy: number (required, 0..100)
+    //   - xpEarned: number (required, >= 0)
+    //   - stars: int (required, 0..3)
+    //   - durationSec: number (required, 0..86400)
+    //   - createdAt: timestamp | string (required, string max 64 chars)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function validString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() <= 254 &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string &&
+        url.size() <= 1000 &&
+        (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function isValidDateOrTimestamp(val) {
+      return val is timestamp || (val is string && val.size() <= 64);
+    }
+
+    function isValidOptionalNullableString(data, field, maxLen) {
+      return !(field in data) || data[field] == null || validString(data[field], 0, maxLen);
+    }
+
+    function isValidOptionalNullableEmail(data, field) {
+      return !(field in data) || data[field] == null || isValidEmail(data[field]);
+    }
+
+    function isValidOptionalNullableUrl(data, field) {
+      return !(field in data) || data[field] == null || isValidUrl(data[field]);
+    }
+
+    function isValidOptionalBool(data, field) {
+      return !(field in data) || data[field] is bool;
+    }
+
+    function isValidOptionalNonNegativeNumber(data, field) {
+      return !(field in data) || (data[field] is number && data[field] >= 0);
+    }
+
+    function isValidOptionalDateOrTimestamp(data, field) {
+      return !(field in data) || isValidDateOrTimestamp(data[field]);
+    }
+
+    function uidUnchanged(userId) {
+      return request.resource.data.uid == userId &&
+        request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return request.resource.data.uid == resource.data.uid;
+    }
+
+    function createdAtImmutable() {
+      return !('createdAt' in resource.data) ||
+        ('createdAt' in request.resource.data &&
+         request.resource.data.createdAt == resource.data.createdAt);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data, userId) {
+      let allowedFields = [
+        'uid', 'xp', 'level', 'streak', 'preferredLayout', 'badges',
+        'displayName', 'email', 'photoURL', 'lastPracticeDate',
+        'soundEnabled', 'showKeyboard', 'showHands', 'privacyConsentAt',
+        'totalLessonsCompleted', 'totalKeystrokes', 'createdAt', 'updatedAt'
+      ];
+      let requiredFields = ['uid', 'xp', 'level', 'streak', 'preferredLayout', 'badges'];
+      let validLayouts = ['de-qwertz', 'ch-qwertz', 'en-qwerty'];
+
+      return hasOnlyAllowedFields(allowedFields) &&
+        hasRequiredFields(requiredFields) &&
+        data.uid is string && data.uid == userId &&
+        data.xp is number && data.xp >= 0 &&
+        data.level is number && data.level >= 1 &&
+        data.streak is number && data.streak >= 0 &&
+        data.preferredLayout is string && data.preferredLayout in validLayouts &&
+        data.badges is list && data.badges.size() <= 50 &&
+        isValidOptionalNullableString(data, 'displayName', 100) &&
+        isValidOptionalNullableEmail(data, 'email') &&
+        isValidOptionalNullableUrl(data, 'photoURL') &&
+        (!('lastPracticeDate' in data) || validString(data.lastPracticeDate, 0, 32)) &&
+        isValidOptionalBool(data, 'soundEnabled') &&
+        isValidOptionalBool(data, 'showKeyboard') &&
+        isValidOptionalBool(data, 'showHands') &&
+        isValidOptionalDateOrTimestamp(data, 'privacyConsentAt') &&
+        isValidOptionalNonNegativeNumber(data, 'totalLessonsCompleted') &&
+        isValidOptionalNonNegativeNumber(data, 'totalKeystrokes') &&
+        isValidOptionalDateOrTimestamp(data, 'createdAt') &&
+        isValidOptionalDateOrTimestamp(data, 'updatedAt');
+    }
+
+    function isValidLessonProgress(data) {
+      let allowedFields = [
+        'lessonId', 'stars', 'bestWpm', 'bestCpm',
+        'bestAccuracy', 'attempts', 'lastPlayedAt'
+      ];
+      return hasOnlyAllowedFields(allowedFields) &&
+        hasRequiredFields(allowedFields) &&
+        validString(data.lessonId, 1, 100) &&
+        data.stars is int && data.stars >= 0 && data.stars <= 3 &&
+        data.bestWpm is number && data.bestWpm >= 0 && data.bestWpm <= 1000 &&
+        data.bestCpm is number && data.bestCpm >= 0 && data.bestCpm <= 5000 &&
+        data.bestAccuracy is number && data.bestAccuracy >= 0 && data.bestAccuracy <= 100 &&
+        data.attempts is int && data.attempts >= 1 &&
+        isValidDateOrTimestamp(data.lastPlayedAt);
+    }
+
+    function isValidKeyStats(data) {
+      let allowedFields = ['keys', 'updatedAt'];
+      return hasOnlyAllowedFields(allowedFields) &&
+        hasRequiredFields(allowedFields) &&
+        data.keys is map && data.keys.size() <= 200 &&
+        isValidDateOrTimestamp(data.updatedAt);
+    }
+
+    function isValidSession(data) {
+      let allowedFields = [
+        'lessonId', 'lessonTitle', 'wpm', 'cpm', 'accuracy',
+        'xpEarned', 'stars', 'durationSec', 'createdAt'
+      ];
+      return hasOnlyAllowedFields(allowedFields) &&
+        hasRequiredFields(allowedFields) &&
+        validString(data.lessonId, 1, 100) &&
+        validString(data.lessonTitle, 1, 200) &&
+        data.wpm is number && data.wpm >= 0 && data.wpm <= 1000 &&
+        data.cpm is number && data.cpm >= 0 && data.cpm <= 5000 &&
+        data.accuracy is number && data.accuracy >= 0 && data.accuracy <= 100 &&
+        data.xpEarned is number && data.xpEarned >= 0 &&
+        data.stars is int && data.stars >= 0 && data.stars <= 3 &&
+        data.durationSec is number && data.durationSec >= 0 && data.durationSec <= 86400 &&
+        isValidDateOrTimestamp(data.createdAt);
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      // Strictly owner-only read/write (protects PII & supports revDSG/GDPR deletion)
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) &&
+        uidUnchanged(userId) &&
+        isValidUser(request.resource.data, userId);
+      allow update: if isOwner(userId) &&
+        uidNotModified() &&
+        createdAtImmutable() &&
+        isValidUser(request.resource.data, userId);
+      allow delete: if isOwner(userId);
+
+      // Lesson progress subcollection
+      match /lessons/{lessonId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+          isValidLessonProgress(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Per-key statistics subcollection
+      match /stats/{statId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+          isValidKeyStats(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Practice session history subcollection (immutable records)
+      match /sessions/{sessionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+          isValidSession(request.resource.data);
+        allow update: if false;
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

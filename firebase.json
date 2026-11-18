@@ -1,0 +1,32 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "TippMeister 10-Finger",
+        "supportEmail": "jarno.brunner@gmail.com",
+        "authorizedRedirectUris": [
+          "https://tippmeister-ch-2026.firebaseapp.com/__/auth/handler",
+          "http://localhost:5173"
+        ]
+      }
+    }
+  }
+}

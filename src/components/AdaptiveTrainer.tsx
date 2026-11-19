@@ -68,13 +68,13 @@ export const AdaptiveTrainer: React.FC<AdaptiveTrainerProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="bg-white border-2 border-stone-200 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-indigo-600 font-bold text-sm">
+          <div className="flex items-center gap-2 text-blue-700 font-bold text-sm">
             <Sparkles className="w-4 h-4" />
-            Adaptives Fehler-Training (wie Keybr & Tipp10)
+            Adaptives Fehler-Training (wie Keybr &amp; Tipp10)
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-stone-500 mt-1">
             {weakKeys.length > 0
               ? 'Deine Übung wird dynamisch aus deinen aktuell schwächsten Tasten generiert:'
               : 'Absolviere zuerst 1–2 Übungen, damit wir deine schwächsten Tasten erkennen können. Bis dahin trainierst du häufige Wörter.'}
@@ -84,10 +84,10 @@ export const AdaptiveTrainer: React.FC<AdaptiveTrainerProps> = ({
               {weakKeys.map((wk) => (
                 <span
                   key={wk.ch}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold font-mono-typing"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs font-bold font-mono-typing"
                 >
                   {wk.ch.toUpperCase()}
-                  <span className="text-[10px] font-normal text-rose-600">
+                  <span className="text-[10px] font-normal text-red-600">
                     {Math.round(wk.errorRate * 100)}% Fehler
                   </span>
                 </span>
@@ -98,7 +98,7 @@ export const AdaptiveTrainer: React.FC<AdaptiveTrainerProps> = ({
 
         <button
           onClick={() => setSeed((s) => s + 1)}
-          className="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-2 transition cursor-pointer"
+          className="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 text-xs font-bold flex items-center gap-2 transition cursor-pointer"
         >
           <RefreshCw className="w-4 h-4" />
           Neue Wörter generieren

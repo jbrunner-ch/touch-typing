@@ -45,8 +45,8 @@ export const SpeedTest: React.FC<SpeedTestProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-indigo-600 font-bold text-sm">
+      <div className="bg-white border-2 border-stone-200 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-blue-700 font-bold text-sm">
           <Gauge className="w-5 h-5" />
           Freier Speed-Test
         </div>
@@ -59,10 +59,10 @@ export const SpeedTest: React.FC<SpeedTestProps> = ({
                 setWordCount(cnt);
                 setSeed((s) => s + 1);
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer border ${
                 wordCount === cnt
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-blue-600 text-white border-blue-700'
+                  : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200'
               }`}
             >
               {cnt} Wörter
@@ -70,7 +70,7 @@ export const SpeedTest: React.FC<SpeedTestProps> = ({
           ))}
           <button
             onClick={() => setSeed((s) => s + 1)}
-            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+            className="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Neuer Text

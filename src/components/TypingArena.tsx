@@ -245,30 +245,30 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
   return (
     <div ref={containerRef} tabIndex={-1} className="outline-none space-y-4">
       {/* Header & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white border-2 border-stone-200 rounded-xl px-4 py-3">
         <div className="flex items-center gap-3">
           {onBack && (
             <button
               onClick={onBack}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+              className="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 transition cursor-pointer"
               title="Zurück zur Übersicht"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
           )}
           <div>
-            <h2 className="font-bold text-slate-900 text-base sm:text-lg leading-tight">{title}</h2>
-            <p className="text-xs text-slate-500">{subtitle}</p>
+            <h2 className="font-extrabold text-stone-900 text-base sm:text-lg leading-tight">{title}</h2>
+            <p className="text-xs text-stone-500">{subtitle}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             onClick={onToggleSound}
-            className={`p-2 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition cursor-pointer ${
+            className={`p-2 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition cursor-pointer ${
               soundEnabled
-                ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                : 'bg-slate-50 border-slate-200 text-slate-500'
+                ? 'bg-blue-50 border-blue-300 text-blue-700'
+                : 'bg-stone-50 border-stone-200 text-stone-500'
             }`}
             title="Tipp-Sound umschalten"
           >
@@ -276,10 +276,10 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
           </button>
           <button
             onClick={onToggleHands}
-            className={`p-2 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition cursor-pointer ${
+            className={`p-2 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition cursor-pointer ${
               showHands
-                ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                : 'bg-slate-50 border-slate-200 text-slate-500'
+                ? 'bg-blue-50 border-blue-300 text-blue-700'
+                : 'bg-stone-50 border-stone-200 text-stone-500'
             }`}
             title="Finger-Guide umschalten"
           >
@@ -287,10 +287,10 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
           </button>
           <button
             onClick={onToggleKeyboard}
-            className={`p-2 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition cursor-pointer ${
+            className={`p-2 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition cursor-pointer ${
               showKeyboard
-                ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                : 'bg-slate-50 border-slate-200 text-slate-500'
+                ? 'bg-blue-50 border-blue-300 text-blue-700'
+                : 'bg-stone-50 border-stone-200 text-stone-500'
             }`}
             title="Virtuelle Tastatur umschalten"
           >
@@ -299,7 +299,7 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
           </button>
           <button
             onClick={resetSession}
-            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+            className="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 transition cursor-pointer"
             title="Neu starten"
           >
             <RotateCcw className="w-4 h-4" />
@@ -309,41 +309,41 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
 
       {/* Live Metrics Bar */}
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
-        <div className="bg-white border border-slate-200 rounded-xl p-2.5 sm:p-3 text-center shadow-xs">
-          <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Tempo</div>
-          <div className="text-lg sm:text-2xl font-extrabold text-indigo-600">
-            {liveWpm} <span className="text-xs font-semibold text-slate-400">WPM</span>
+        <div className="bg-white border-2 border-stone-200 rounded-xl p-2.5 sm:p-3 text-center">
+          <div className="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Tempo</div>
+          <div className="text-lg sm:text-2xl font-extrabold text-blue-600">
+            {liveWpm} <span className="text-xs font-bold text-stone-400">WPM</span>
           </div>
-          <div className="text-[10px] text-slate-400">{liveCpm} Zeichen/Min</div>
+          <div className="text-[10px] text-stone-400">{liveCpm} Zeichen/Min</div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-2.5 sm:p-3 text-center shadow-xs">
-          <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Genauigkeit</div>
+        <div className="bg-white border-2 border-stone-200 rounded-xl p-2.5 sm:p-3 text-center">
+          <div className="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Genauigkeit</div>
           <div
             className={`text-lg sm:text-2xl font-extrabold ${
-              liveAccuracy >= minAccuracy ? 'text-emerald-600' : 'text-rose-500'
+              liveAccuracy >= minAccuracy ? 'text-emerald-600' : 'text-red-600'
             }`}
           >
             {liveAccuracy}%
           </div>
-          <div className="text-[10px] text-slate-400">Ziel: ≥ {minAccuracy}%</div>
+          <div className="text-[10px] text-stone-400">Ziel: ≥ {minAccuracy}%</div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-2.5 sm:p-3 text-center shadow-xs">
-          <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Combo</div>
-          <div className="text-lg sm:text-2xl font-extrabold text-amber-500 flex items-center justify-center gap-1">
+        <div className="bg-white border-2 border-stone-200 rounded-xl p-2.5 sm:p-3 text-center">
+          <div className="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Combo</div>
+          <div className="text-lg sm:text-2xl font-extrabold text-orange-500 flex items-center justify-center gap-1">
             <Flame className="w-4 h-4 sm:w-5 sm:h-5" />
             {combo}
           </div>
-          <div className="text-[10px] text-slate-400">Rekord: {maxCombo}</div>
+          <div className="text-[10px] text-stone-400">Rekord: {maxCombo}</div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-2.5 sm:p-3 text-center shadow-xs">
-          <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Fortschritt</div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-800">{progressPct}%</div>
-          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-1 overflow-hidden">
+        <div className="bg-white border-2 border-stone-200 rounded-xl p-2.5 sm:p-3 text-center">
+          <div className="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Fortschritt</div>
+          <div className="text-lg sm:text-2xl font-extrabold text-stone-800">{progressPct}%</div>
+          <div className="w-full bg-stone-100 h-1.5 rounded-full mt-1 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full transition-all duration-150"
+              className="bg-emerald-500 h-full transition-all duration-150"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -352,13 +352,13 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
 
       {/* Text Prompt Box */}
       <div
-        className={`relative bg-white border-2 rounded-2xl p-5 sm:p-7 shadow-sm transition-colors ${
-          hadErrorAtCurrent ? 'border-rose-300 bg-rose-50/30' : 'border-indigo-100'
+        className={`relative bg-white border-2 border-b-4 rounded-2xl p-5 sm:p-7 transition-colors ${
+          hadErrorAtCurrent ? 'border-red-400 bg-red-50/30' : 'border-stone-200'
         } ${shakeTrigger ? 'animate-shake' : ''}`}
       >
         {!startTime && (
-          <div className="mb-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
-            ✨ Tipp: Lege die Finger auf A S D F — J K L Ö und tippe einfach los!
+          <div className="mb-3 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-stone-100 border border-stone-200 text-stone-700 text-xs font-bold">
+            Finger auf A S D F — J K L Ö legen und einfach lostippen
           </div>
         )}
 
@@ -370,7 +370,7 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
 
             if (isTyped) {
               return (
-                <span key={idx} className="text-emerald-600 bg-emerald-50/60 rounded-xs">
+                <span key={idx} className="text-emerald-700 bg-emerald-50 rounded-xs">
                   {displayChar}
                 </span>
               );
@@ -381,8 +381,8 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
                   key={idx}
                   className={`relative rounded px-0.5 font-bold underline decoration-2 underline-offset-4 ${
                     hadErrorAtCurrent
-                      ? 'bg-rose-500 text-white decoration-rose-200'
-                      : 'bg-indigo-600 text-white decoration-indigo-300'
+                      ? 'bg-red-600 text-white decoration-red-200'
+                      : 'bg-blue-600 text-white decoration-blue-200'
                   }`}
                 >
                   {char === ' ' ? '␣' : char}
@@ -390,7 +390,7 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
               );
             }
             return (
-              <span key={idx} className="text-slate-400">
+              <span key={idx} className="text-stone-400">
                 {displayChar}
               </span>
             );
@@ -465,7 +465,7 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
             <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
               <button
                 onClick={resetSession}
-                className="flex-1 py-3 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 font-semibold text-slate-700 flex items-center justify-center gap-2 transition cursor-pointer"
+                className="flex-1 py-3 px-4 rounded-xl border-2 border-stone-200 hover:bg-stone-50 font-bold text-stone-700 flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
                 Nochmal
@@ -473,7 +473,7 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
               {result.passed && hasNextLesson && onNextLesson ? (
                 <button
                   onClick={onNextLesson}
-                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+                  className="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 border-b-4 border-blue-800 text-white font-bold flex items-center justify-center gap-2 transition cursor-pointer"
                 >
                   Nächste Lektion
                   <ArrowRight className="w-4 h-4" />
@@ -482,7 +482,7 @@ export const TypingArena: React.FC<TypingArenaProps> = ({
                 onBack && (
                   <button
                     onClick={onBack}
-                    className="flex-1 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition cursor-pointer"
+                    className="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 border-b-4 border-blue-800 text-white font-bold transition cursor-pointer"
                   >
                     Zur Übersicht
                   </button>

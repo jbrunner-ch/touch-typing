@@ -327,7 +327,7 @@ export function App() {
       : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5]">
       <Navbar
         activeTab={activeTab}
         onSelectTab={(tab) => {
@@ -355,14 +355,14 @@ export function App() {
 
       {!firebaseUser && !authLoading && (
         <div className="max-w-6xl mx-auto w-full px-4 pt-3">
-          <div className="bg-indigo-50/80 border border-indigo-100 rounded-xl px-4 py-2 text-xs text-indigo-800 flex flex-wrap items-center justify-between gap-2">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 text-xs text-stone-700 flex flex-wrap items-center justify-between gap-2">
             <span>
               Du übst aktuell im <strong>Gast-Modus</strong> (lokal gespeichert). Melde dich mit
-              Google an, um deinen Fortschritt in der Cloud zu sichern!
+              Google an, um deinen Fortschritt in der Cloud zu sichern.
             </span>
             <button
               onClick={handleGoogleLogin}
-              className="font-bold underline hover:text-indigo-950 cursor-pointer"
+              className="font-bold text-blue-700 underline hover:text-blue-900 cursor-pointer"
             >
               Jetzt mit Google anmelden
             </button>
@@ -428,27 +428,27 @@ export function App() {
       </main>
 
       {/* Legal Footer */}
-      <footer className="border-t border-slate-200 bg-white py-4 px-4 text-xs text-slate-500">
+      <footer className="border-t-2 border-stone-200 bg-white py-4 px-4 text-xs text-stone-500">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div>
             © {new Date().getFullYear()} TippMeister — 10-Finger-System lernen (Schweiz / revDSG)
           </div>
-          <div className="flex flex-wrap items-center gap-4 font-medium">
+          <div className="flex flex-wrap items-center gap-4 font-semibold">
             <button
               onClick={() => setLegalModalTab('privacy')}
-              className="hover:text-indigo-600 transition cursor-pointer"
+              className="hover:text-blue-600 transition cursor-pointer"
             >
               Datenschutzerklärung
             </button>
             <button
               onClick={() => setLegalModalTab('imprint')}
-              className="hover:text-indigo-600 transition cursor-pointer"
+              className="hover:text-blue-600 transition cursor-pointer"
             >
               Impressum
             </button>
             <button
               onClick={() => setLegalModalTab('data')}
-              className="hover:text-indigo-600 transition cursor-pointer"
+              className="hover:text-blue-600 transition cursor-pointer"
             >
               Daten exportieren / Konto löschen
             </button>
